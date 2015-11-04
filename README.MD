@@ -6,25 +6,25 @@
 
 <h2><b>Install</b></h2>
 <h3><b>1.  Embed in element HTML</b></h3>
-    You simply add <b>data-toggle=&quot;input-gmap&quot;</b> on the desired element. example:
-      &lt;input name='map' data-toggle='input-gmap'&gt;
+    You simply add " data-toggle='input-gmap' " on the desired element. example:
+      " <input name='map' data-toggle='input-gmap'> "
     a. You can add your location to default location via "data-latitude" and "data-longitude", example :
-      &lt;input name='map' data-toggle='input-gmap' data-latitude='-6.1750359' data-longitude='106.827192'&gt;
+      " <input name='map' data-toggle='input-gmap' data-latitude='-6.1750359' data-longitude='106.827192'> "
     b. You can set size window from map via "data-height" and "data-width", value of data-height in pixel and value of data-width in percent, example :
-      &lt;input name='map' data-toggle='input-gmap' data-width='100' data-height='400'&gt;
+      " <input name='map' data-toggle='input-gmap' data-width='100' data-height='400'> "
     c. You can set zoom of map via "data-zoom", example :
-      &lt;input name='map' data-toggle='input-gmap' data-zoom='15'&gt;
+      " <input name='map' data-toggle='input-gmap' data-zoom='15'> "
     d. You can add points of markers via "data-points", with format : "[latitude],[longitude];[latitude],[longitude];..." if you have n point, example :
-      &lt;input name='map' data-toggle='input-gmap' data-points='-6.169696,106.821420;-6.170080,106.840088'&gt;
+      " <input name='map' data-toggle='input-gmap' data-points='-6.169696,106.821420;-6.170080,106.840088'> "
     e. You can set max of total marker which user can add to map via "data-max-marker", example :
-      &lt;input name='map' data-toggle='input-gmap' data-max-marker='10'&gt;
+      " <input name='map' data-toggle='input-gmap' data-max-marker='10'> "
 
 <h3><b>2.  Or via Methods</b></h3>
     You simply make input maps with like this:
     // new InputGmap(element, options)
-    var inputMap = new InputGmap($(&quot;input&quot;));
+    var inputMap = new InputGmap($("input"));
     or with options
-    var a = new InputGmap($(&quot;input&quot;), {'width': 100, zoom : 15});
+    var a = new InputGmap($("input"), {'width': 100, 'zoom' : 15});
 
 <h2><b>Options :</b></h2>
     a. width, default : 100
