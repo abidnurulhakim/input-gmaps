@@ -1,19 +1,29 @@
+/*
+* Created by Abid Nurul Hakim, 2015
+* Email : abidnurulhakim@gmail.com
+* For README can be access in https://github.com/abidnurulhakim/input-gmaps
+*/
+
+var stackInputGmap = [];
 var InputGmap = function(input, options) {
+    this.defaultLatitude = -6.1750359;
+    this.defaultLongitude = 106.827192;
+
     if (!options) {
         this.dataPoints = [];
         this.height = 400;
         this.width = 100;
         this.totalMaxMarker = 100;
-        this.latitude = -6.1750359;
-        this.longitude = 106.827192;
+        this.latitude = null;
+        this.longitude = null;
         this.zoom = 15;
     } else {
         this.dataPoints = (!options.points) ? [] : options.points;
         this.height = (!options.height) ? 300 : options.height;
         this.width = (!options.width) ? 100 : options.width;
         this.totalMaxMarker = (!options.maxMarker) ? 100 : options.maxMarker;
-        this.latitude = (!options.latitude) ? -6.1750359 : Number(options.latitude);
-        this.longitude = (!options.longitude) ? 106.827192 : Number(options.longitude);
+        this.latitude = (!options.longitude) ? null : options.latitude;
+        this.longitude = (!options.longitude) ? null : options.longitude;
         this.zoom = (!options.zoom) ? 15 : options.zoom;
     }
     this.points = [];
@@ -24,27 +34,14 @@ var InputGmap = function(input, options) {
             }
         };
     }
+
     this.input = input;
     this.container = $("<div class='input-map' style='width:"+this.width+"%;height:"+this.height+"px'></div>");
 
-    this.data = {
-        'position' : new google.maps.LatLng(this.latitude, this.longitude),
-        'width' : this.width,
-        'height' : this.height,
-        'maxMarker' : this.totalMaxMarker,
-        'points' : this.points,
-        'container' : this.container,
-        'element' : this.input,
-        'zoom' : this.zoom,
-    };
-
-    this.data.element.attr("hidden", true);
-    this.data.container.insertBefore(this.data.element);
-
     /*
-    * initialize map
-    * @param this.data  data
-    * @return google.maps.Map
+    * Initialize map
+    * @param {Object}  data
+    * @return {google.maps.Map}
     */
     this.initializeMap = function(data) {
         var map_options = {
@@ -57,9 +54,9 @@ var InputGmap = function(input, options) {
     };
 
     /*
-    * initialize event listener click for remove marker by user
-    * @param this.data  data
-    * @param google.maps.Marker  marker
+    * Initialize event listener click for remove marker by user
+    * @param {Object}  data
+    * @param {google.maps.Marker}  marker
     */
     this.initializeRemoveMarkerListener = function(data, marker) {
         google.maps.event.addListener(marker, 'click', function(event) {
@@ -77,17 +74,17 @@ var InputGmap = function(input, options) {
                 var position = arrayTempPosition.pop();
                 data.points.push(position);
             }
-            var value = this.pointsToString();
+            var value = data.pointsToString(data.points);
             data.element.attr("value", value);
         });
     };
 
     /*
-    * initialize marker in a map
-    * @param this.data  data
-    * @param google.maps.Map map
-    * @param google.maps.LatLng  positions
-    * @return google.maps.Marker
+    * Initialize marker in a map
+    * @param {Object}  data
+    * @param {google.maps.Map} map
+    * @param {google.maps.LatLng}  positions
+    * @return {google.maps.Marker}
     */
     this.initializeMarker = function(data, map, positions) {
         var marker = new google.maps.Marker({
@@ -99,19 +96,16 @@ var InputGmap = function(input, options) {
 
     /*
     * initialize event lister click for add marker by user
-    * @param this.data  data
-    * @param google.maps.Map  map
-    * @param function  callbackInitializeMarker
-    * @param function  callbackPointToString
-    * @param function  callbackInitializeRemoveMarkerListener
+    * @param {Object}  data
+    * @param {google.maps.Map}  map
     */
-    this.initializeAddMarkerListener = function(data, map, callbackInitializeMarker, callbackPointToString, callbackInitializeRemoveMarkerListener) {
+    this.initializeAddMarkerListener = function(data, map) {
         google.maps.event.addListener(map, 'click', function(event) {
             if (data.points.length < data.maxMarker) {
-                var marker = callbackInitializeMarker(data, map, event.latLng);
-                callbackInitializeRemoveMarkerListener(data, marker);
+                var marker = data.initializeMarker(data, map, event.latLng);
+                data.initializeRemoveMarkerListener(data, marker);
                 data.points.push(event.latLng);
-                var value = callbackPointToString(data.points);
+                var value = data.pointsToString(data.points);
                 data.element.attr("value", value);
             }
         });
@@ -119,8 +113,8 @@ var InputGmap = function(input, options) {
 
     /*
     * Get string from array points
-    * @param Array  points
-    * @return String
+    * @param {Array}  points
+    * @return {String}
     */
     this.pointsToString = function(points) {
         if (points.length < 1) {
@@ -133,13 +127,54 @@ var InputGmap = function(input, options) {
         return result;
     };
 
-    var inputMap = this.initializeMap(this.data);
-    for (var i = 0; i < this.data.points.length; i++) {
-        var marker =  this.initializeMarker(this.data, inputMap, this.data.points[i]);
-        this.initializeRemoveMarkerListener(this.data, marker);
+    this.initializeDivMap = function (data) {
+        data.element.attr("hidden", true);
+        data.container.insertBefore(data.element);
+        var inputMap = data.initializeMap(data);
+        for (var i = 0; i < data.points.length; i++) {
+            var marker =  this.initializeMarker(data, inputMap, data.points[i]);
+            this.initializeRemoveMarkerListener(data, marker);
+        }
+        data.element.attr("value", data.pointsToString(data.points));
+        data.initializeAddMarkerListener(data, inputMap);
+    };
+
+    this.data = {
+        'position' : new google.maps.LatLng(this.defaultLatitude, this.defaultLongitude),
+        'width' : this.width,
+        'height' : this.height,
+        'maxMarker' : this.totalMaxMarker,
+        'points' : this.points,
+        'container' : this.container,
+        'element' : this.input,
+        'zoom' : this.zoom,
+        'initializeMap' : this.initializeMap,
+        'initializeMarker' : this.initializeMarker,
+        'initializeAddMarkerListener' : this.initializeAddMarkerListener,
+        'initializeRemoveMarkerListener' : this.initializeRemoveMarkerListener,
+        'pointsToString' : this.pointsToString,
+        'initializeDivMap' : this.initializeDivMap
+    };
+
+    if (!this.latitude || !this.longitude) {
+        if (navigator.geolocation) {
+            stackInputGmap.push(this.data);
+            navigator.geolocation.getCurrentPosition(function(position){
+                var data = stackInputGmap.pop();
+                data.position = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
+                data.initializeDivMap(data);
+            }, function (){
+                var data = stackInputGmap.pop();
+                data.initializeDivMap(data);
+            });
+        } else {
+            this.initializeDivMap(this.data);
+        }
+    } else {
+        this.data.position = new google.maps.LatLng(options.latitude, options.longitude);
+        this.initializeDivMap(this.data);
     }
-    this.data.element.attr("value", this.pointsToString(this.data.points));
-    this.initializeAddMarkerListener(this.data, inputMap, this.initializeMarker, this.pointsToString, this.initializeRemoveMarkerListener);
+
 };
 
 var elementInputMap = [];
@@ -147,7 +182,7 @@ $("[data-toggle='input-gmap']").each(function(i){
     var myLatitude = -6.1750359;
     var myLongitude = 106.827192;
     if (navigator.geolocation) {
-        element.push($(this));
+        elementInputMap.push($(this));
         navigator.geolocation.getCurrentPosition(function(position){
             myLatitude = position.coords.latitude;
             myLongitude = position.coords.longitude;
