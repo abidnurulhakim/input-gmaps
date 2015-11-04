@@ -14,18 +14,21 @@ var InputGmap = function(input, options) {
         this.width = (!options.width) ? 100 : options.width;
         this.totalMinMarker = (!options.minMarker) ? 0 : options.minMarker;
         this.totalMaxMarker = (!options.maxMarker) ? 100 : options.maxMarker;
-        this.latitude = (!options.latitude) ? -6.1750359 : options.latitude;
-        this.longitude = (!options.longitude) ? 106.827192 : options.longitude;
+        this.latitude = (!options.latitude) ? -6.1750359 : Number(options.latitude);
+        this.longitude = (!options.longitude) ? 106.827192 : Number(options.longitude);
         this.zoom = (!options.zoom) ? 15 : options.zoom;
     }
     this.points = Array();
-    if (!Array.isArray(this.dataPoints)) {
+    if (Array.isArray(this.dataPoints)) {
+        console.log("dataPoint is array");
         for (var i = 0; i < this.dataPoints.length; i++) {
-            if ((typeof dataPoints[i].latitude == 'Number') && (typeof dataPoints[i].longitude == 'Number')) {
-                this.points.push(new google.maps.LatLng(dataPoints[i].latitude, dataPoints[i].longitude));
+            console.log(typeof this.dataPoints[i].latitude);
+            if ((typeof this.dataPoints[i].latitude == 'number') && (typeof this.dataPoints[i].longitude == 'number')) {
+                this.points.push(new google.maps.LatLng(this.dataPoints[i].latitude, this.dataPoints[i].longitude));
             }
         };
     }
+    console.log(this.points);
     this.input = input;
     this.container = $("<div class='input-map' style='width:"+this.width+"%;height:"+this.height+"px'></div>");
 
@@ -136,6 +139,10 @@ var InputGmap = function(input, options) {
     };
 
     var inputMap = this.initializeMap(this.data);
+    for (var i = 0; i < this.data.points.length; i++) {
+        this.initializeMarker(this.data, inputMap, this.data.points[i], this.initializeRemoveMarkerListener);
+    }
+    this.data.element.attr("value", this.pointsToString(this.data.points));
     this.initializeAddMarkerListener(this.data, inputMap, this.initializeMarker, this.pointsToString, this.initializeRemoveMarkerListener);
 };
 
@@ -157,19 +164,19 @@ $("[data-toggle='input-gmap']").each(function(i){
     var longitude = (!$(this).data('longitude')) ? myLongitude : $(this).data('longitude');
     var zoom = (!$(this).data('zoom')) ? 15 : $(this).data('zoom');
     var arrayPoints = Array();
-    if (points.trim.length > 0) {
+    if (points.trim().length > 0) {
         var split = points.split(";");
         for (var i = 0; i < split.length; i++) {
             var position = split[i].split(",");
             if (position.length > 1) {
-                arrayPoints.push({ 'latitude' : position[0], 'longitude' : position[1]});
+                arrayPoints.push({ 'latitude' : Number(position[0]), 'longitude' : Number(position[1])});
             }
         };
     }
     var map = new InputGmap($(this), {
         'width' : width,
         'height' : height,
-        'points' : points,
+        'points' : arrayPoints,
         'minMarker' : minMarker,
         'maxMarker' : maxMarker,
         'latitude' : latitude,

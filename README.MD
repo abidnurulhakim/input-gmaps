@@ -25,7 +25,7 @@
     " var inputMap = new InputGmap($("input")); "
     or with options
     var a = new InputGmap($("input"), {'width': 100, zoom : 15});
-
+<h3><b>*Note: type of latitude and longitude must be number</b></h3>
 <h2><b>Options :</b></h2>
     a. width, default : 100
     b. height, default : 400
