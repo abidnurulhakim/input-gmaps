@@ -1,30 +1,22 @@
 var InputGmap = function(input, options) {
     if (!options) {
-        this.dataPoints = Array();
+        this.dataPoints = [];
         this.height = 400;
         this.width = 100;
-        this.totalMinMarker = 0;
         this.totalMaxMarker = 100;
         this.latitude = -6.1750359;
         this.longitude = 106.827192;
         this.zoom = 15;
-        this.require = false;
     } else {
-        this.dataPoints = (!options.points) ? Array() : options.points;
+        this.dataPoints = (!options.points) ? [] : options.points;
         this.height = (!options.height) ? 300 : options.height;
         this.width = (!options.width) ? 100 : options.width;
-        this.totalMinMarker = (!options.minMarker) ? 0 : options.minMarker;
         this.totalMaxMarker = (!options.maxMarker) ? 100 : options.maxMarker;
         this.latitude = (!options.latitude) ? -6.1750359 : Number(options.latitude);
         this.longitude = (!options.longitude) ? 106.827192 : Number(options.longitude);
         this.zoom = (!options.zoom) ? 15 : options.zoom;
-        this.require = (!options.require) ? false : true;
     }
-    if (this.totalMinMarker < 1 && this.require) {
-        this.totalMinMarker = 1;
-        input.attr('data-min-marker', this.totalMinMarker);
-    }
-    this.points = Array();
+    this.points = [];
     if (Array.isArray(this.dataPoints)) {
         for (var i = 0; i < this.dataPoints.length; i++) {
             if ((typeof this.dataPoints[i].latitude == 'number') && (typeof this.dataPoints[i].longitude == 'number')) {
@@ -39,7 +31,6 @@ var InputGmap = function(input, options) {
         'position' : new google.maps.LatLng(this.latitude, this.longitude),
         'width' : this.width,
         'height' : this.height,
-        'minMarker' : this.totalMinMarker,
         'maxMarker' : this.totalMaxMarker,
         'points' : this.points,
         'container' : this.container,
@@ -73,7 +64,7 @@ var InputGmap = function(input, options) {
     this.initializeRemoveMarkerListener = function(data, marker) {
         google.maps.event.addListener(marker, 'click', function(event) {
             marker.setMap(null);
-            var arrayTempPosition = Array();
+            var arrayTempPosition = [];
             for (var i = data.points.length-1; i >= 0 ; i--) {
                 if (data.points[i].lat() != marker.getPosition().lat() || data.points[i].lng() != marker.getPosition().lng()) {
                     var position = data.points.pop();
@@ -151,25 +142,35 @@ var InputGmap = function(input, options) {
     this.initializeAddMarkerListener(this.data, inputMap, this.initializeMarker, this.pointsToString, this.initializeRemoveMarkerListener);
 };
 
+var elementInputMap = [];
 $("[data-toggle='input-gmap']").each(function(i){
     var myLatitude = -6.1750359;
     var myLongitude = 106.827192;
     if (navigator.geolocation) {
+        element.push($(this));
         navigator.geolocation.getCurrentPosition(function(position){
             myLatitude = position.coords.latitude;
             myLongitude = position.coords.longitude;
-        }, function (){});
+            var el = elementInputMap.pop();
+            initInputMap(el, myLatitude, myLongitude);
+        }, function (){
+            var el = elementInputMap.pop();
+            initInputMap(el, myLatitude, myLongitude);
+        });
+    } else {
+        initInputMap($(this), myLatitude, myLongitude);
     }
-    var width = (!$(this).data('width')) ? 100 : $(this).data('width');
-    var height = (!$(this).data('height')) ? 400 : $(this).data('height');
-    var points = (!$(this).data('points')) ? "" : $(this).data('points');
-    var minMarker = (!$(this).data('min-marker')) ? 0 : $(this).data('min-marker');
-    var maxMarker = (!$(this).data('max-marker')) ? 100 : $(this).data('max-marker');
-    var latitude = (!$(this).data('latitude')) ? myLatitude : $(this).data('latitude');
-    var longitude = (!$(this).data('longitude')) ? myLongitude : $(this).data('longitude');
-    var zoom = (!$(this).data('zoom')) ? 15 : $(this).data('zoom');
-    var require = $(this).attr('required');
-    var arrayPoints = Array();
+});
+
+function initInputMap (container, myLatitude, myLongitude) {
+    var width = (!container.data('width')) ? 100 : container.data('width');
+    var height = (!container.data('height')) ? 400 : container.data('height');
+    var points = (!container.data('points')) ? "" : container.data('points');
+    var maxMarker = (!container.data('max-marker')) ? 100 : container.data('max-marker');
+    var latitude = (!container.data('latitude')) ? myLatitude : container.data('latitude');
+    var longitude = (!container.data('longitude')) ? myLongitude : container.data('longitude');
+    var zoom = (!container.data('zoom')) ? 15 : container.data('zoom');
+    var arrayPoints = [];
     if (points.trim().length > 0) {
         var split = points.split(";");
         for (var i = 0; i < split.length; i++) {
@@ -179,14 +180,12 @@ $("[data-toggle='input-gmap']").each(function(i){
             }
         };
     }
-    var map = new InputGmap($(this), {
+    var map = new InputGmap(container, {
         'width' : width,
         'height' : height,
         'points' : arrayPoints,
-        'minMarker' : minMarker,
         'maxMarker' : maxMarker,
         'latitude' : latitude,
         'longitude' : longitude,
-        'require' : require
     });
-});
+}

@@ -16,8 +16,8 @@
       " <input name='map' data-toggle='input-gmap' data-zoom='15'> "
     d. You can add points of markers via "data-points", with format : "[latitude],[longitude];[latitude],[longitude];..." if you have n point, example :
       " <input name='map' data-toggle='input-gmap' data-points='-6.169696,106.821420;-6.170080,106.840088'> "
-    e. You can set min and max of total marker which user can add to map via "data-min-marker" and "data-max-marker", example :
-      " <input name='map' data-toggle='input-gmap' data-min-marker='0' data-max-marker='10'> "
+    e. You can set max of total marker which user can add to map via "data-min-marker" and "data-max-marker", example :
+      " <input name='map' data-toggle='input-gmap' data-max-marker='10'> "
 
 <h3><b>2.  Or via Methods</b></h3>
     You simply make input maps with like this:
