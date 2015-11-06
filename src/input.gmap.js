@@ -177,34 +177,14 @@ var InputGmap = function(input, options) {
 
 };
 
-var elementInputMap = [];
 $("[data-toggle='input-gmap']").each(function(i){
-    var myLatitude = -6.1750359;
-    var myLongitude = 106.827192;
-    if (navigator.geolocation) {
-        elementInputMap.push($(this));
-        navigator.geolocation.getCurrentPosition(function(position){
-            myLatitude = position.coords.latitude;
-            myLongitude = position.coords.longitude;
-            var el = elementInputMap.pop();
-            initInputMap(el, myLatitude, myLongitude);
-        }, function (){
-            var el = elementInputMap.pop();
-            initInputMap(el, myLatitude, myLongitude);
-        });
-    } else {
-        initInputMap($(this), myLatitude, myLongitude);
-    }
-});
-
-function initInputMap (container, myLatitude, myLongitude) {
-    var width = (!container.data('width')) ? 100 : container.data('width');
-    var height = (!container.data('height')) ? 400 : container.data('height');
-    var points = (!container.data('points')) ? "" : container.data('points');
-    var maxMarker = (!container.data('max-marker')) ? 100 : container.data('max-marker');
-    var latitude = (!container.data('latitude')) ? myLatitude : container.data('latitude');
-    var longitude = (!container.data('longitude')) ? myLongitude : container.data('longitude');
-    var zoom = (!container.data('zoom')) ? 15 : container.data('zoom');
+    var width = (!$(this).data('width')) ? 100 : $(this).data('width');
+    var height = (!$(this).data('height')) ? 400 : $(this).data('height');
+    var points = (!$(this).data('points')) ? "" : $(this).data('points');
+    var maxMarker = (!$(this).data('max-marker')) ? 100 : $(this).data('max-marker');
+    var latitude = (!$(this).data('latitude')) ? null : $(this).data('latitude');
+    var longitude = (!$(this).data('longitude')) ? null : $(this).data('longitude');
+    var zoom = (!$(this).data('zoom')) ? 15 : $(this).data('zoom');
     var arrayPoints = [];
     if (points.trim().length > 0) {
         var split = points.split(";");
@@ -215,7 +195,7 @@ function initInputMap (container, myLatitude, myLongitude) {
             }
         };
     }
-    var map = new InputGmap(container, {
+    var map = new InputGmap($(this), {
         'width' : width,
         'height' : height,
         'points' : arrayPoints,
@@ -223,4 +203,5 @@ function initInputMap (container, myLatitude, myLongitude) {
         'latitude' : latitude,
         'longitude' : longitude,
     });
-}
+});
+
