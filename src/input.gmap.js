@@ -6,37 +6,34 @@
 
 var stackInputGmap = [];
 var InputGmap = function(input, options) {
-    this.defaultLatitude = -6.1750359;
-    this.defaultLongitude = 106.827192;
-
-    if (!options) {
-        this.dataPoints = [];
-        this.height = 400;
-        this.width = 100;
-        this.totalMaxMarker = 100;
-        this.latitude = null;
-        this.longitude = null;
-        this.zoom = 15;
-    } else {
-        this.dataPoints = (!options.points) ? [] : options.points;
-        this.height = (!options.height) ? 300 : options.height;
-        this.width = (!options.width) ? 100 : options.width;
-        this.totalMaxMarker = (!options.maxMarker) ? 100 : options.maxMarker;
-        this.latitude = (!options.longitude) ? null : options.latitude;
-        this.longitude = (!options.longitude) ? null : options.longitude;
-        this.zoom = (!options.zoom) ? 15 : options.zoom;
-    }
-    this.points = [];
-    if (Array.isArray(this.dataPoints)) {
-        for (var i = 0; i < this.dataPoints.length; i++) {
-            if ((typeof this.dataPoints[i].latitude == 'number') && (typeof this.dataPoints[i].longitude == 'number')) {
-                this.points.push(new google.maps.LatLng(this.dataPoints[i].latitude, this.dataPoints[i].longitude));
+    this.default_options = {
+        'point' : [],
+        'height' : 400,
+        'width' : 100,
+        'maxMarker' : 100,
+        'latitude' : null,
+        'longitude' : null,
+        'zoom' : 15,
+        'points' : [],
+        'latitude' : -6.1750359,
+        'longitude' : 106.827192,
+        'element' : $(document),
+        'container' : $("<div class='input-map' style='width:100%;height:400px'></div>"),
+    };
+    console.log(options);
+    this.settings = $.extend( {}, this.default_options, options);
+    console.log(this.settings);
+    if (Array.isArray(this.settings.point)) {
+        console.log('isArray');
+        for (var i = 0; i < this.settings.point.length; i++) {
+            if ((typeof this.settings.point[i].latitude == 'number') && (typeof this.settings.point[i].longitude == 'number')) {
+                this.settings.points.push(new google.maps.LatLng(this.settings.point[i].latitude, this.settings.point[i].longitude));
             }
         };
     }
-
-    this.input = input;
-    this.container = $("<div class='input-map' style='width:"+this.width+"%;height:"+this.height+"px'></div>");
+    console.log(this.settings.points);
+    this.settings.element = input;
+    this.settings.container = $("<div class='input-map' style='width:"+this.settings.width+"%;height:"+this.settings.height+"px'></div>");
 
     /*
     * Initialize map
@@ -91,6 +88,7 @@ var InputGmap = function(input, options) {
             position: positions,
             map: map,
         });
+        console.log("marker");
         return marker;
     };
 
@@ -140,14 +138,7 @@ var InputGmap = function(input, options) {
     };
 
     this.data = {
-        'position' : new google.maps.LatLng(this.defaultLatitude, this.defaultLongitude),
-        'width' : this.width,
-        'height' : this.height,
-        'maxMarker' : this.totalMaxMarker,
-        'points' : this.points,
-        'container' : this.container,
-        'element' : this.input,
-        'zoom' : this.zoom,
+        'position' : new google.maps.LatLng(options.latitude, options.longitude),
         'initializeMap' : this.initializeMap,
         'initializeMarker' : this.initializeMarker,
         'initializeAddMarkerListener' : this.initializeAddMarkerListener,
@@ -155,8 +146,9 @@ var InputGmap = function(input, options) {
         'pointsToString' : this.pointsToString,
         'initializeDivMap' : this.initializeDivMap
     };
+    this.data = $.extend({}, this.settings, this.data);
 
-    if (!this.latitude || !this.longitude) {
+    if (!this.data.latitude || !this.data.longitude) {
         if (navigator.geolocation) {
             stackInputGmap.push(this.data);
             navigator.geolocation.getCurrentPosition(function(position){
@@ -195,13 +187,15 @@ $("[data-toggle='input-gmap']").each(function(i){
             }
         };
     }
+
     var map = new InputGmap($(this), {
-        'width' : width,
-        'height' : height,
-        'points' : arrayPoints,
-        'maxMarker' : maxMarker,
-        'latitude' : latitude,
-        'longitude' : longitude,
+        width : width,
+        height : height,
+        point : arrayPoints,
+        maxMarker : maxMarker,
+        latitude : latitude,
+        longitude : longitude,
+        zoom : zoom,
     });
 });
 

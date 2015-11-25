@@ -29,11 +29,10 @@
 <h2><b>Options :</b></h2>
     a. width, default : 100
     b. height, default : 400
-    c. points, default : []
-    d. minMarker, default : 0
-    e. maxMarker, default : 100
-    f. latitude, default : current latitude
-    g. longitude, default : current longitude
+    c. point, default : []
+    d. maxMarker, default : 100
+    e. latitude, default : current latitude
+    f. longitude, default : current longitude
 
 <h3><b>*Note: </b></h3>
 <ul>

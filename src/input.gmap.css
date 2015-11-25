@@ -1,0 +1,42 @@
+.modalInputMap {
+    position: fixed;
+    font-family: Arial, Helvetica, sans-serif;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background: rgba(0, 0, 0, 0.7);
+    z-index: 99999;
+    opacity:0;
+    -webkit-transition: opacity 400ms ease-in;
+    -moz-transition: opacity 400ms ease-in;
+    transition: opacity 400ms ease-in;
+    pointer-events: none;
+}
+.modalInputMap:target {
+    opacity:1;
+    pointer-events: auto;
+}
+.modalInputMap > .contentModalInputMap {
+    width: 400px;
+    position: relative;
+    margin: 10% auto;
+    padding: 5px 20px 13px 20px;
+    border-radius: 5px;
+    background: #fff;
+}
+.modalInputMap > .contentModalInputMap > .close {
+    display:inline-block;
+    width:20px;
+    text-align:center;
+    line-height: 20px;
+    font-size:14px;
+    color: #da542e;
+    float: right;
+    text-decoration: none;
+    margin-right:-10px;
+}
+.modalInputMap > .contentModalInputMap > .close:hover {
+    background: #da542e;
+    color:white;
+}
